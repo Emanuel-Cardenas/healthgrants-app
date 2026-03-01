@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YedaTech v6 | Radar Inteligente de Convocatorias</title>
+    <meta name="description"
+        content="Sistema multiagente YedaTech: investigación exhaustiva de convocatorias de salud en tiempo real." />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cabin+Condensed:wght@400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+    <!-- ─── NAVBAR ─── -->
+    <nav>
+        <div class="nav-left">
+            <div class="nav-logo"><span class="logo-icon">⚡</span><span class="logo-text">Yeda<span
+                        class="logo-highlight">Tech</span></span></div>
+        </div>
+        <div class="nav-center">
+            <button class="nav-tab active" data-tab="search" onclick="switchTab('search')">🔎 Búsqueda</button>
+            <button class="nav-tab" data-tab="favorites" onclick="switchTab('favorites')">⭐ Favoritas (<span
+                    id="favCount">0</span>)</button>
+            <button class="nav-tab" data-tab="history" onclick="switchTab('history')">📜 Historial</button>
+            <button class="nav-tab" data-tab="compare" onclick="switchTab('compare')">⚖️ Comparar (<span
+                    id="compareCount">0</span>)</button>
+            <button class="nav-tab" data-tab="alerts" onclick="switchTab('alerts')">🔔 Alertas (<span
+                    id="alertCount">0</span>)</button>
+            <button class="nav-tab" data-tab="dashboard" onclick="switchTab('dashboard')">📊 Dashboard</button>
+        </div>
+        <div class="nav-right">
+            <div class="nav-badge">🔬 INVESTIGACIÓN EN TIEMPO REAL</div>
+            <div class="nav-time" id="navTime"></div>
+        </div>
+    </nav>
+
+    <!-- ═══ TAB: BÚSQUEDA ═══ -->
+    <div class="tab-content active" id="tab-search">
+
+        <!-- HERO -->
+        <header class="hero">
+            <div class="hero-particles" id="heroParticles"></div>
+            <div class="hero-badge">⚡ SISTEMA MULTIAGENTE DE INVESTIGACIÓN</div>
+            <h1 class="hero-title">Investigación <span class="gradient-text">Inteligente</span></h1>
+            <p class="hero-subtitle">Cinco agentes de IA trabajan en paralelo para buscar, verificar, estructurar
+                y resumir convocatorias abiertas directamente de fuentes oficiales.</p>
+            <div class="hero-stats-mini">
+                <div class="mini-stat"><span class="mini-stat-num" id="totalSearches">0</span><span>Búsquedas</span>
+                </div>
+                <div class="mini-stat"><span class="mini-stat-num">5</span><span>Agentes IA</span></div>
+                <div class="mini-stat"><span class="mini-stat-num">19</span><span>Fuentes</span></div>
+                <div class="mini-stat"><span class="mini-stat-num">🧠</span><span>Gemini IA</span></div>
+            </div>
+        </header>
+
+        <!-- SEARCH PANEL -->
+        <div class="search-panel">
+            <div class="search-card">
+                <div class="search-main">
+                    <label for="searchQuery" class="search-main-label">🔎 ¿Qué convocatoria deseas encontrar?</label>
+                    <div class="search-input-wrap">
+                        <input type="text" id="searchQuery" class="search-input"
+                            placeholder="Ej: cáncer, salud mental, biotecnología, IA médica..." autocomplete="off" />
+                        <span class="search-input-icon">🔬</span>
+                    </div>
+                    <p class="search-hint">Escribe exactamente lo que necesitas. El sistema navega dentro de cada sitio
+                        para encontrar la convocatoria específica.</p>
+                </div>
+                <div class="search-row single">
+                    <div class="form-group">
+                        <label for="regionSelect">🌎 País / Región</label>
+                        <select id="regionSelect"></select>
+                    </div>
+                </div>
+                <button class="search-btn" id="searchBtn" onclick="executeSearch()">
+                    <span class="btn-icon">⚡</span>
+                    <span class="btn-text">Iniciar Investigación Profunda</span>
+                    <span class="spinner"></span>
+                    <span class="btn-loading-text" style="display:none;">Investigando exhaustivamente...</span>
+                </button>
+                <div class="suggested-searches">
+                    <span class="suggested-label">Sugerencias:</span>
+                    <button class="suggested-pill" onclick="quickSearch('cancer research grants')">🧬 Cáncer</button>
+                    <button class="suggested-pill" onclick="quickSearch('salud mental')">🧠 Salud Mental</button>
+                    <button class="suggested-pill" onclick="quickSearch('biotechnology grants')">🔬
+                        Biotecnología</button>
+                    <button class="suggested-pill" onclick="quickSearch('salud publica')">🌍 Salud Pública</button>
+                    <button class="suggested-pill" onclick="quickSearch('artificial intelligence health')">🤖 IA
+                        Médica</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AGENT PROGRESS -->
+        <div class="agent-progress" id="agentProgress">
+            <div class="progress-card">
+                <div class="progress-header">
+                    <h2>🧠 Agentes en ejecución</h2>
+                    <div class="progress-timer" id="progressTimer">0.0s</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <span class="progress-pct" id="progressPct">0%</span>
+                </div>
+                <div class="agents-grid">
+                    <div class="agent-item" id="agent1">
+                        <div class="agent-icon">🔍</div>
+                        <div class="agent-info"><strong>Agente 1 — Búsqueda Profunda</strong><span class="agent-status"
+                                id="agent1Status">En espera...</span></div>
+                    </div>
+                    <div class="agent-item" id="agent2">
+                        <div class="agent-icon">✅</div>
+                        <div class="agent-info"><strong>Agente 2 — Verificación</strong><span class="agent-status"
+                                id="agent2Status">En espera...</span></div>
+                    </div>
+                    <div class="agent-item" id="agent3">
+                        <div class="agent-icon">📊</div>
+                        <div class="agent-info"><strong>Agente 3 — Estructuración</strong><span class="agent-status"
+                                id="agent3Status">En espera...</span></div>
+                    </div>
+                    <div class="agent-item" id="agent4">
+                        <div class="agent-icon">🧠</div>
+                        <div class="agent-info"><strong>Agente 4 — Resumen IA</strong><span class="agent-status"
+                                id="agent4Status">En espera...</span></div>
+                    </div>
+                </div>
+                <div class="progress-log" id="progressLog"></div>
+            </div>
+        </div>
+
+        <!-- QUERY INFO -->
+        <div class="query-info" id="queryInfo">
+            <p id="queryInfoText"></p>
+        </div>
+
+        <!-- STATS BAR -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-card">
+                <div class="stat-num" id="statTotal">0</div>
+                <div class="stat-label">CONVOCATORIAS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statOpen">0</div>
+                <div class="stat-label">ABIERTAS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statRegions">0</div>
+                <div class="stat-label">REGIONES</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num accent" id="statTime">0s</div>
+                <div class="stat-label">TIEMPO</div>
+            </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="results-toolbar" id="resultsToolbar">
+            <div class="toolbar-left">
+                <h2 id="grantsTitle" class="grants-title">Resultados</h2>
+                <div class="filter-pills" id="filterPills"></div>
+            </div>
+            <div class="toolbar-right">
+                <select class="sort-select" id="sortSelect" onchange="sortResults()">
+                    <option value="relevance">📊 Relevancia</option>
+                    <option value="dateAsc">📅 Fecha ↑</option>
+                    <option value="dateDesc">📅 Fecha ↓</option>
+                    <option value="amountDesc">💰 Monto ↓</option>
+                </select>
+                <button class="toolbar-btn" onclick="exportExcel()" title="Exportar Excel">📊 Excel</button>
+                <button class="toolbar-btn" onclick="exportPDF()" title="Exportar PDF">📄 PDF</button>
+                <button class="toolbar-btn" onclick="toggleView()" id="viewToggle" title="Vista">📐 Vista</button>
+            </div>
+        </div>
+
+        <!-- GRANTS GRID -->
+        <section class="grants-section" id="grantsSection">
+            <div class="grants-grid" id="grantsGrid"></div>
+        </section>
+
+        <!-- PAGINATION -->
+        <div class="pagination" id="pagination"></div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🧬</div>
+            <h3>Busca convocatorias de investigación</h3>
+            <p>Escribe un tema en la barra de búsqueda y presiona "Iniciar Investigación" para comenzar.</p>
+        </div>
+    </div>
+
+    <!-- ═══ TAB: FAVORITAS ═══ -->
+    <div class="tab-content" id="tab-favorites">
+        <div class="tab-header">
+            <h2>⭐ Convocatorias Favoritas</h2>
+            <p>Tus convocatorias guardadas durante esta sesión.</p>
+            <div class="tab-header-actions">
+                <button class="toolbar-btn" onclick="exportFavoritesExcel()">📊 Exportar Favoritas</button>
+                <button class="toolbar-btn danger" onclick="clearFavorites()">🗑 Limpiar</button>
+            </div>
+        </div>
+        <div class="favorites-grid" id="favoritesGrid">
+            <div class="empty-state visible">
+                <div class="empty-icon">⭐</div>
+                <h3>Sin favoritas aún</h3>
+                <p>Marca convocatorias como favoritas desde los resultados de búsqueda.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ TAB: HISTORIAL ═══ -->
+    <div class="tab-content" id="tab-history">
+        <div class="tab-header">
+            <h2>📜 Historial de Búsquedas</h2>
+            <p>Tus búsquedas recientes en esta sesión.</p>
+            <div class="tab-header-actions">
+                <button class="toolbar-btn danger" onclick="clearHistory()">🗑 Limpiar</button>
+            </div>
+        </div>
+        <div class="history-list" id="historyList">
+            <div class="empty-state visible">
+                <div class="empty-icon">📜</div>
+                <h3>Sin historial</h3>
+                <p>Tus búsquedas aparecerán aquí.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ TAB: COMPARAR ═══ -->
+    <div class="tab-content" id="tab-compare">
+        <div class="tab-header">
+            <h2>⚖️ Comparar Convocatorias</h2>
+            <p>Selecciona convocatorias para comparar lado a lado.</p>
+            <div class="tab-header-actions">
+                <button class="toolbar-btn danger" onclick="clearCompare()">🗑 Limpiar</button>
+            </div>
+        </div>
+        <div class="compare-table-wrap" id="compareTableWrap">
+            <div class="empty-state visible">
+                <div class="empty-icon">⚖️</div>
+                <h3>Sin convocatorias para comparar</h3>
+                <p>Usa el botón "Comparar" en las tarjetas de resultados.</p>
+            </div>
+        </div>
+    </div>
+    <!-- ═══ TAB: ALERTAS ═══ -->
+    <div class="tab-content" id="tab-alerts">
+        <div class="tab-header">
+            <h2>🔔 Centro de Alertas</h2>
+            <p>Configura alertas para recibir notificaciones cuando haya nuevas convocatorias.</p>
+        </div>
+        <div class="alerts-panel">
+            <div class="alert-create">
+                <h3>➕ Crear Nueva Alerta</h3>
+                <div class="alert-form">
+                    <input type="text" id="alertTopic" class="search-input"
+                        placeholder="Tema a monitorear: ej. cáncer, biotecnología, salud mental..." />
+                    <select id="alertRegion" class="sort-select">
+                        <option value="global">🌐 Global</option>
+                        <option value="norteamerica">🇺🇸 Norteamérica</option>
+                        <option value="europa">🇪🇺 Europa</option>
+                        <option value="latinoamerica">🌎 Latinoamérica</option>
+                        <option value="colombia">🇨🇴 Colombia</option>
+                    </select>
+                    <button class="search-btn" onclick="createNewAlert()" style="max-width:250px">🔔 Crear
+                        Alerta</button>
+                </div>
+            </div>
+            <div class="alerts-list" id="alertsList">
+                <div class="empty-state visible">
+                    <div class="empty-icon">🔔</div>
+                    <h3>Sin alertas configuradas</h3>
+                    <p>Crea una alerta para monitorear un tema específico.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ TAB: DASHBOARD ═══ -->
+    <div class="tab-content" id="tab-dashboard">
+        <div class="dashboard-panel">
+            <div class="dashboard-header">
+                <h2>📊 Dashboard Analítico</h2>
+                <p>Visualiza tus resultados de búsqueda en gráficos interactivos</p>
+            </div>
+            <div id="dashboardContent">
+                <div class="dashboard-empty">
+                    <div class="empty-icon">📊</div>
+                    <h3>Realiza una búsqueda primero</h3>
+                    <p>Los gráficos se generarán automáticamente con tus resultados.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="footer-logo">⚡</span><span>Yeda<span
+                        class="logo-highlight">Tech</span></span></div>
+            <p>Sistema multiagente de investigación en tiempo real</p>
+            <div class="footer-links">
+                <span>🔬 25+ fuentes oficiales</span>
+                <span>🧠 Gemini IA</span>
+                <span>🔒 Enlaces verificados</span>
+                <span>📊 Excel &amp; PDF</span>
+                <span>🔔 Alertas</span>
+            </div>
+        </div>
+    </footer>
+
+    <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
